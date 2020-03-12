@@ -1,0 +1,23 @@
+{
+ "name": "@tripsit/api",
+ "private": true,
+ "version": "0.1.0",
+ "description": "TripSit's official HTTP API",
+ "main": "index.js",
+ "author": "Matthew Palmer <mspalmer91@gmail.com>",
+ "license": "APL",
+ "scripts": {
+  "test": "echo \"Error: no test specified\" && exit 1"
+ },
+ "keywords": [
+  "TripSit"
+ ],
+ "dependencies": {
+  "express": "^4.17.1"
+ },
+ "devDependencies": {
+  "eslint": "^6.1.0",
+  "eslint-config-airbnb-base": "^14.0.0",
+  "eslint-plugin-import": "^2.20.1"
+ }
+}
