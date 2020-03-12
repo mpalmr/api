@@ -5,3 +5,9 @@ exports.Query = {
 		return dataSources.db.drug.getById(drugId);
 	},
 };
+
+exports.Mutation = {
+	async createDrug(root, { newDrug }, { dataSources }) {
+
+	},
+};

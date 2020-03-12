@@ -9,7 +9,7 @@ const { DateTimeResolver } = require('graphql-scalars');
 const { Query: DrugQuery, Mutations: DrugMutations } = require('./drug');
 
 const typeDefs = gql`
-	${importSchema(path.resolve('src/apollo/schema/schema.graphql'))}
+	${importSchema(path.resolve('./schema/schema.graphql'))}
 `;
 
 const resolvers = {

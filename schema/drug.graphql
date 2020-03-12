@@ -2,11 +2,11 @@ type Query {
 	getDrugById(drugId: ID!): Drug!
 }
 
-type Mutations {
+type Mutation {
 	createDrug(drug: DrugInput!): Drug!
 }
 
-input DrugINput {
+input DrugInput {
 	name: String!
 	summary: String
 	effects: String
