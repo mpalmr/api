@@ -2,6 +2,20 @@ type Query {
 	getDrugById(drugId: ID!): Drug!
 }
 
+type Mutations {
+	createDrug(drug: DrugInput!): Drug!
+}
+
+input DrugINput {
+	name: String!
+	summary: String
+	effects: String
+	detection: String
+	avoid: String
+	pubchemCid: String
+	referencesAndNotes: String
+}
+
 type Drug {
 	id: ID!
 	name: String!
