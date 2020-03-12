@@ -8,8 +8,10 @@
 	"license": "APL",
 	"scripts": {
 		"start": "node index.js",
-		"dev": "nodemon --inspect index.js",
-		"test": "jest"
+		"dev": "docker-compose up && nodemon --inspect index.js",
+		"test": "jest",
+		"migration:latest": "eval $(cat .env) npx knex migration:latest",
+		"migration:create": "eval $(cat .env) npx knex migration:make --"
 	},
 	"keywords": [
 		"TripSit"
