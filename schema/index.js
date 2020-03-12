@@ -1,32 +1,21 @@
 'use strict';
 
+const path = require('path');
 const { gql } = require('apollo-server');
 const { makeExecutableSchema } = require('graphql-tools');
+const { importSchema } = require('graphql-import');
+const { DateTimeResolver } = require('graphql-scalars');
+
+const { Query: DrugQuery } = require('./drug');
 
 const typeDefs = gql`
-	type Query {
-		getDrugById(drugId: ID!): Drug!
-	}
-
-	type Drug {
-		id: ID!
-		name: String!
-		summary: String
-		effects: String
-		detection: String
-		avoid: String
-		pubchemCid: String
-		referencesAndNotes: String
-		createdAt: Date!
-		updatedAt: Date!
-	}
+	${importSchema(path.resolve('src/apollo/schema/schema.graphql'))}
 `;
 
 const resolvers = {
+	DateTime: DateTimeResolver,
 	Query: {
-		async getDrugById(root, { drugId }, { dataSources }) {
-			return dataSources.db.drug.getById(drugId);
-		},
+		...DrugQuery,
 	},
 };
 
