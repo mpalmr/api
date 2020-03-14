@@ -2,8 +2,12 @@
 
 module.exports = function createDrugDataSource(db) {
 	return {
-		async getById(id) {
-			return db('drug').select('*').where('id', id);
+		getById(id) {
+			return db('drug').where('id', id);
+		},
+
+		create(newDrug) {
+			return db('drug').insert(newDrug);
 		},
 	};
 };

@@ -43,6 +43,9 @@ exports.Query = {
 
 exports.Mutation = {
 	async createDrug(root, { newDrug }, { dataSources }) {
-		return dataSources.db.drug.create(newDrug);
+		return dataSources.db.drug
+			.create(newDrug)
+			.returning('*')
+			.then(([createdDrug]) => createdDrug);
 	},
 };
