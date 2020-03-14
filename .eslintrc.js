@@ -14,7 +14,7 @@ module.exports = {
 	},
   overrides: [
     {
-			files: ['**/*.spec.js'],
+			files: ['**/*.spec.js', '**/__mocks__/*.js'],
 			env: { jest: true },
 			plugins: ['jest'],
 		},
