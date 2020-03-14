@@ -14,7 +14,7 @@ const {
 module.exports = makeExecutableSchema({
 
 	typeDefs: gql`
-		scalar DateTime;
+		scalar DateTime
 		${drugTypeDefs}
 	`,
 
@@ -23,7 +23,7 @@ module.exports = makeExecutableSchema({
 		Query: {
 			...DrugQuery,
 		},
-		Mutations: {
+		Mutation: {
 			...DrugMutations,
 		},
 		...drugTypeResolvers,

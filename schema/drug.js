@@ -30,8 +30,8 @@ exports.typeDefs = gql`
 		avoid: String
 		pubchemCid: String
 		referencesAndNotes: String
-		createdAt: Date!
-		updatedAt: Date!
+		createdAt: DateTime!
+		updatedAt: DateTime!
 	}
 `;
 
