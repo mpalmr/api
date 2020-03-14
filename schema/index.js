@@ -1,25 +1,32 @@
 'use strict';
 
-const path = require('path');
 const { gql } = require('apollo-server');
 const { makeExecutableSchema } = require('graphql-tools');
-const { importSchema } = require('graphql-import');
 const { DateTimeResolver } = require('graphql-scalars');
 
-const { Query: DrugQuery, Mutations: DrugMutations } = require('./drug');
+const {
+	typeDefs: drugTypeDefs,
+	Query: DrugQuery,
+	Mutations: DrugMutations,
+	...drugTypeResolvers
+} = require('./drug');
 
-const typeDefs = gql`
-	${importSchema(path.resolve('./schema/schema.graphql'))}
-`;
+module.exports = makeExecutableSchema({
 
-const resolvers = {
-	DateTime: DateTimeResolver,
-	Query: {
-		...DrugQuery,
+	typeDefs: gql`
+		scalar DateTime;
+		${drugTypeDefs}
+	`,
+
+	resolvers: {
+		DateTime: DateTimeResolver,
+		Query: {
+			...DrugQuery,
+		},
+		Mutations: {
+			...DrugMutations,
+		},
+		...drugTypeResolvers,
 	},
-	Mutations: {
-		...DrugMutations,
-	},
-};
 
-module.exports = makeExecutableSchema({ typeDefs, resolvers });
+});

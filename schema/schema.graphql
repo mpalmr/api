@@ -1,3 +1,0 @@
-# import Query.*, Mutation.* from "drug.graphql"
-
-scalar DateTime
