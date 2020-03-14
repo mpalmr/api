@@ -2,4 +2,5 @@
 
 psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d "$POSTGRES_USER" <<-EOSQL
 	CREATE DATABASE tripsit;
+	CREATE DATABASE tripsit_test;
 EOSQL
