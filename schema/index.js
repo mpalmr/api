@@ -2,19 +2,31 @@
 
 const { gql } = require('apollo-server');
 const { makeExecutableSchema } = require('graphql-tools');
+const { DateTimeResolver } = require('graphql-scalars');
 
-const typeDefs = gql`
-	type Query {
-		test: String!
-	}
-`;
+const {
+	typeDefs: drugTypeDefs,
+	Query: DrugQuery,
+	Mutations: DrugMutations,
+	...drugTypeResolvers
+} = require('./drug');
 
-const resolvers = {
-	Query: {
-		test() {
-			return 'AYYY!';
+module.exports = makeExecutableSchema({
+
+	typeDefs: gql`
+		scalar DateTime
+		${drugTypeDefs}
+	`,
+
+	resolvers: {
+		DateTime: DateTimeResolver,
+		Query: {
+			...DrugQuery,
 		},
+		Mutation: {
+			...DrugMutations,
+		},
+		...drugTypeResolvers,
 	},
-};
 
-module.exports = makeExecutableSchema({ typeDefs, resolvers });
+});

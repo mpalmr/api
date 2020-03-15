@@ -1,6 +1,7 @@
 version: "3.7"
 
 services:
+
     db:
         image: postgres:12-alpine
         container_name: tripsit-db
@@ -12,7 +13,23 @@ services:
             - db_data:/var/lib/postgresql/data
             - db_data:/docker-entrypoint-initdb.d
 
+    db_test:
+        image: postgres:12-alpine
+        container_name: tripsit-db-test
+        restart: always
+        env_file: .env
+        ports:
+            - 5532:5432
+        volumes:
+            - db_data_test:/var/lib/postgresql/data
+            - db_data_test:/docker-entrypoint-initdb.d
+
 volumes:
+
     db_data:
         name: tripsit-db
+        driver: local
+
+    db_data_test:
+        name: tripsit-db-test
         driver: local

@@ -11,10 +11,11 @@ module.exports = {
 		'no-tabs': 0,
 		'no-console': 0,
 		'func-names': 0,
+		'arrow-parens': [2, 'as-needed', { requireForBlockBody: true }],
 	},
   overrides: [
     {
-			files: ['**/*.spec.js'],
+			files: ['**/*.spec.js', '**/__mocks__/*.js'],
 			env: { jest: true },
 			plugins: ['jest'],
 		},
