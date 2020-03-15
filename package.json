@@ -7,9 +7,10 @@
 	"author": "Matthew Palmer <mspalmer91@gmail.com>",
 	"license": "APL",
 	"scripts": {
-		"dev": "nodemon --inspect server.js",
-		"test": "npm run test:intgration",
-		"test:integration": "jest -c tests/jest.config.js",
+		"start": "NODE_ENV=production node index.js",
+		"dev": "NODE_ENV=development nodemon --inspect index.js",
+		"test": "NODE_ENV=test npm run test:integration",
+		"test:integration": "NODE_ENV=test jest -c tests/jest.config.js",
 		"migration:latest": "eval $(cat .env) npx knex migration:latest",
 		"migration:create": "eval $(cat .env) npx knex migration:make --"
 	},
