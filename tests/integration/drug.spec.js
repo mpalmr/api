@@ -1,23 +1,23 @@
 'use strict';
 
 const { gql } = require('apollo-server');
-const { createTestClient, uuidRegex } = require('apollo-server-testing');
-const createTestServer = require('./utils/create-test-server');
+const { createTestClient } = require('apollo-server-testing');
+const { createTestServer, uuidRegex, isoDateRegex } = require('./utils');
 
 describe('Mutations', () => {
 	test('Can create a new drug', async () => {
 		const server = createTestServer();
 		const { mutate } = createTestClient(server);
 
-		const { id, ...drug } = await mutate({
-			variables: {
-				name: 'Lubetazerpine',
-				summary: 'Slippery when wet',
-				effects: 'Whoaaa',
-			},
+		const {
+			id,
+			createdAt,
+			updatedAt,
+			...drug
+		} = await mutate({
 			mutation: gql`
-				mutation CreateDrug($newDrug: DrugInput!) {
-					createDrug(newDrug: $newDrug) {
+				mutation CreateDrug($drug: DrugInput!) {
+					createDrug(drug: $drug) {
 						id
 						name
 						summary
@@ -31,14 +31,27 @@ describe('Mutations', () => {
 					}
 				}
 			`,
+			variables: {
+				drug: {
+					name: 'Lubetazerpine',
+					summary: 'Slippery when wet',
+					effects: 'Whoaaa',
+				},
+			},
 		})
 			.then(res => res.data.createDrug);
 
 		expect(id).toMatch(uuidRegex);
+		expect(createdAt).toMatch(isoDateRegex);
+		expect(updatedAt).toMatch(isoDateRegex);
 		expect(drug).toEqual({
 			name: 'Lubetazerpine',
 			summary: 'Slippery when wet',
 			effects: 'Whoaaa',
+			avoid: null,
+			detection: null,
+			pubchemCid: null,
+			referencesAndNotes: null,
 		});
 	});
 });

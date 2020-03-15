@@ -6,8 +6,8 @@ module.exports = function createDrugDataSource(db) {
 			return db('drug').where('id', id);
 		},
 
-		create(newDrug) {
-			return db('drug').insert(newDrug);
+		create(drug) {
+			return db('drug').insert(drug);
 		},
 	};
 };
