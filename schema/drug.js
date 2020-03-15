@@ -10,6 +10,7 @@ exports.typeDefs = gql`
 	type Mutation {
 		createDrug(drug: CreateDrugInput!): Drug!
 		updateDrug(drugId: ID!, updates: UpdateDrugInput!): Drug!
+		deleteDrug(drugId: ID!): Boolean
 	}
 
 	input CreateDrugInput {
@@ -59,5 +60,9 @@ exports.Mutation = {
 
 	async updateDrug(root, { drugId, updates }, { dataSources }) {
 		return dataSources.db.drug.updateById(drugId, updates);
+	},
+
+	async deleteDrug(root, { drugId }, { dataSources }) {
+		return dataSources.db.drug.updateById(drugId, { deleted: true });
 	},
 };

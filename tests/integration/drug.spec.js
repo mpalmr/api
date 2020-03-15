@@ -24,8 +24,7 @@ describe('Query', () => {
 			.returning('id')
 			.then(([a]) => a);
 
-		const server = createTestServer();
-		const { query } = createTestClient(server);
+		const { query } = createTestClient(createTestServer());
 		const { createdAt, updatedAt, ...payload } = await query({
 			query: gql`
 				query GetDrugById($drugId: ID!) {
@@ -64,8 +63,7 @@ describe('Query', () => {
 
 describe('Mutations', () => {
 	test('createDrug', async () => {
-		const server = createTestServer();
-		const { mutate } = createTestClient(server);
+		const { mutate } = createTestClient(createTestServer());
 		const {
 			id,
 			createdAt,
@@ -111,7 +109,10 @@ describe('Mutations', () => {
 			referencesAndNotes: null,
 		});
 
-		const record = await db('drug').where('id', id).first();
+		const record = await db('drug')
+			.where('id', id)
+			.first()
+			.then(({ deleted, ...xs }) => xs);
 		expect(record).toEqual({
 			id,
 			name: 'Lubetazerpine',
@@ -140,8 +141,7 @@ describe('Mutations', () => {
 			.returning('*')
 			.then(([a]) => a);
 
-		const server = createTestServer();
-		const { mutate } = createTestClient(server);
+		const { mutate } = createTestClient(createTestServer());
 		const { detection, effects, updatedAt } = await mutate({
 			mutation: gql`
 				mutation UpdateDrug($drugId: ID!, $updates: UpdateDrugInput!) {
@@ -177,5 +177,38 @@ describe('Mutations', () => {
 			detection: 'Angry dad',
 			effects: 'Bad times',
 		});
+	});
+
+	test('deleteDrug', async () => {
+		const drugId = await db('drug')
+			.insert({ name: 'HEXTRIPPLOEXEN' })
+			.returning('id')
+			.then(([id]) => id);
+
+		const deleted = await db('drug')
+			.select('deleted')
+			.where('id', drugId)
+			.first()
+			.then(record => record.deleted);
+		expect(deleted).toBe(false);
+
+		const { mutate } = createTestClient(createTestServer());
+		const payload = await mutate({
+			mutation: gql`
+				mutation DeleteDrug($drugId: ID!) {
+					deleteDrug(drugId: $drugId)
+				}
+			`,
+			variables: { drugId },
+		})
+			.then(res => res.data.deleteDrug);
+		expect(payload).toBeNull();
+
+		const updatedDeleted = await db('drug')
+			.select('deleted')
+			.where('id', drugId)
+			.first()
+			.then(record => record.deleted);
+		expect(updatedDeleted).toBe(true);
 	});
 });
