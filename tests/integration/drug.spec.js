@@ -11,16 +11,69 @@ beforeAll(() => {
 	db = knex(knexConfig);
 });
 
-describe('Mutations', () => {
-	test('Can create a new drug', async () => {
-		const server = createTestServer();
-		const { mutate } = createTestClient(server);
+describe('Query', () => {
+	test('getDrugById', async () => {
+		const drugId = await db('drug')
+			.insert({
+				name: 'Rickazalam',
+				summary: 'Rowdy',
+				effects: 'AY',
+			})
+			.returning('id')
+			.then(([id]) => id);
 
+		const server = createTestServer();
+		const { query } = createTestClient(server);
 		const {
 			id,
 			createdAt,
 			updatedAt,
-			...drug
+			...payload
+		} = await query({
+			query: gql`
+				query GetDrugById($drugId: ID!) {
+					getDrugById(drugId: $drugId) {
+						id
+						name
+						summary
+						effects
+						detection
+						avoid
+						pubchemCid
+						referencesAndNotes
+						createdAt
+						updatedAt
+					}
+				}
+			`,
+			variables: { drugId },
+		})
+			.then(res => res.data.getDrugById);
+
+		expect(id).toMatch(uuidRegex);
+		expect(createdAt).toMatch(isoDateRegex);
+		expect(updatedAt).toMatch(isoDateRegex);
+		expect(payload).toEqual({
+			name: 'Rickazalam',
+			summary: 'Rowdy',
+			effects: 'AY',
+			avoid: null,
+			detection: null,
+			pubchemCid: null,
+			referencesAndNotes: null,
+		});
+	});
+});
+
+describe('Mutations', () => {
+	test('createDrug', async () => {
+		const server = createTestServer();
+		const { mutate } = createTestClient(server);
+		const {
+			id,
+			createdAt,
+			updatedAt,
+			...payload
 		} = await mutate({
 			mutation: gql`
 				mutation CreateDrug($drug: DrugInput!) {
@@ -51,7 +104,7 @@ describe('Mutations', () => {
 		expect(id).toMatch(uuidRegex);
 		expect(createdAt).toMatch(isoDateRegex);
 		expect(updatedAt).toMatch(isoDateRegex);
-		expect(drug).toEqual({
+		expect(payload).toEqual({
 			name: 'Lubetazerpine',
 			summary: 'Slippery when wet',
 			effects: 'Whoaaa',
