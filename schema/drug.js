@@ -8,11 +8,22 @@ exports.typeDefs = gql`
 	}
 
 	type Mutation {
-		createDrug(drug: DrugInput!): Drug!
+		createDrug(drug: CreateDrugInput!): Drug!
+		updateDrug(drugId: ID!, updates: UpdateDrugInput!): Drug!
 	}
 
-	input DrugInput {
+	input CreateDrugInput {
 		name: String!
+		summary: String
+		effects: String
+		detection: String
+		avoid: String
+		pubchemCid: String
+		referencesAndNotes: String
+	}
+
+	input UpdateDrugInput {
+		name: String
 		summary: String
 		effects: String
 		detection: String
@@ -43,9 +54,10 @@ exports.Query = {
 
 exports.Mutation = {
 	async createDrug(root, { drug }, { dataSources }) {
-		return dataSources.db.drug
-			.create(drug)
-			.returning('*')
-			.then(([createdDrug]) => createdDrug);
+		return dataSources.db.drug.create(drug);
+	},
+
+	async updateDrug(root, { drugId, updates }, { dataSources }) {
+		return dataSources.db.drug.updateById(drugId, updates);
 	},
 };

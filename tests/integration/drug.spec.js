@@ -11,6 +11,8 @@ beforeAll(() => {
 	db = knex(knexConfig);
 });
 
+afterEach(async () => db('drug').truncate());
+
 describe('Query', () => {
 	test('getDrugById', async () => {
 		const drugId = await db('drug')
@@ -20,16 +22,11 @@ describe('Query', () => {
 				effects: 'AY',
 			})
 			.returning('id')
-			.then(([id]) => id);
+			.then(([a]) => a);
 
 		const server = createTestServer();
 		const { query } = createTestClient(server);
-		const {
-			id,
-			createdAt,
-			updatedAt,
-			...payload
-		} = await query({
+		const { createdAt, updatedAt, ...payload } = await query({
 			query: gql`
 				query GetDrugById($drugId: ID!) {
 					getDrugById(drugId: $drugId) {
@@ -50,10 +47,10 @@ describe('Query', () => {
 		})
 			.then(res => res.data.getDrugById);
 
-		expect(id).toMatch(uuidRegex);
 		expect(createdAt).toMatch(isoDateRegex);
 		expect(updatedAt).toMatch(isoDateRegex);
 		expect(payload).toEqual({
+			id: drugId,
 			name: 'Rickazalam',
 			summary: 'Rowdy',
 			effects: 'AY',
@@ -76,7 +73,7 @@ describe('Mutations', () => {
 			...payload
 		} = await mutate({
 			mutation: gql`
-				mutation CreateDrug($drug: DrugInput!) {
+				mutation CreateDrug($drug: CreateDrugInput!) {
 					createDrug(drug: $drug) {
 						id
 						name
@@ -126,6 +123,59 @@ describe('Mutations', () => {
 			referencesAndNotes: null,
 			createdAt: new Date(createdAt),
 			updatedAt: new Date(updatedAt),
+		});
+	});
+
+	test('updateDrug', async () => {
+		const record = await db('drug')
+			.insert({
+				name: 'A-Cheeseburger',
+				summary: 'Delcicious grease',
+				effects: 'Early death',
+				detection: 'Urine',
+				avoid: 'Motorcycles',
+				pubchemCid: 1800,
+				referencesAndNotes: 'Encyclopedia Dramatica',
+			})
+			.returning('*')
+			.then(([a]) => a);
+
+		const server = createTestServer();
+		const { mutate } = createTestClient(server);
+		const { detection, effects, updatedAt } = await mutate({
+			mutation: gql`
+				mutation UpdateDrug($drugId: ID!, $updates: UpdateDrugInput!) {
+					updateDrug(drugId: $drugId, updates: $updates) {
+						id
+						name
+						summary
+						effects
+						detection
+						updatedAt
+					}
+				}
+			`,
+			variables: {
+				drugId: record.id,
+				updates: {
+					detection: 'Angry dad',
+					effects: 'Bad times',
+				},
+			},
+		})
+			.then(res => res.data.updateDrug);
+
+		expect(detection).toBe('Angry dad');
+		expect(effects).toBe('Bad times');
+		expect(new Date(updatedAt)).toEqual(record.updatedAt); // TODO
+
+		const updatedRecord = await db('drug')
+			.select('detection', 'effects')
+			.where('id', record.id)
+			.first();
+		expect(updatedRecord).toEqual({
+			detection: 'Angry dad',
+			effects: 'Bad times',
 		});
 	});
 });

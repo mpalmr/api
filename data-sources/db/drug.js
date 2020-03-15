@@ -7,7 +7,18 @@ module.exports = function createDrugDataSource(db) {
 		},
 
 		create(drug) {
-			return db('drug').insert(drug);
+			return db('drug')
+				.insert(drug)
+				.returning('*')
+				.then(([createdDrug]) => createdDrug);
+		},
+
+		updateById(id, updates) {
+			return db('drug')
+				.update(updates)
+				.where('id', id)
+				.returning('*')
+				.then(([updatedDrug]) => updatedDrug);
 		},
 	};
 };
