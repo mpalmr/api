@@ -7,8 +7,13 @@ const schema = require('./schema');
 const createDataSources = require('./data-sources');
 const knexConfig = require('./knexfile');
 
+function context() {
+	return { user: null };
+}
+
 const server = new ApolloServer({
 	schema,
+	context,
 	dataSources: createDataSources(knex(knexConfig)),
 });
 
