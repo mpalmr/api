@@ -14,7 +14,7 @@ module.exports = {
 		'arrow-parens': [2, 'as-needed', { requireForBlockBody: true }],
 	},
   overrides: [
-    {
+		{
 			files: ['**/*.spec.js', '**/__mocks__/*.js'],
 			env: { jest: true },
 			plugins: ['jest'],
